@@ -70,16 +70,28 @@ def test_dependency_resolution():
 
 def test_multi_rule():
     run_queue([
-        call_enqueue("credit_check", 1, iso_ts(delta_minutes=30)).expect(2),
-        call_enqueue("credit_check", 2, iso_ts(delta_minutes=0)).expect(4),
-        call_enqueue("bank_statements", 1, iso_ts(delta_minutes=10)).expect(5),
+        call_enqueue("credit_check", 1, iso_ts(delta_minutes=30)),
+        call_enqueue("bank_statements", 1, iso_ts(delta_minutes=10)),
+        call_enqueue("credit_check", 2, iso_ts(delta_minutes=0)),
+        call_enqueue("companies_house", 1, iso_ts(delta_minutes=20)),
+        call_enqueue("credit_check", 2, iso_ts(delta_minutes=40)),
+        call_enqueue("bank_statements", 4, iso_ts(delta_minutes=60)),
         
+
         call_dequeue().expect("bank_statements", 1),
         call_dequeue().expect("companies_house", 1),
+        call_dequeue().expect("companies_house", 1),
         call_dequeue().expect("credit_check", 1),
+        
         call_dequeue().expect("companies_house", 2),
         call_dequeue().expect("credit_check", 2),
+        call_dequeue().expect("companies_house", 2),
+        call_dequeue().expect("credit_check", 2),
+
+        call_dequeue("bank_statements", 4),
+
     ])
+
 
 
 
