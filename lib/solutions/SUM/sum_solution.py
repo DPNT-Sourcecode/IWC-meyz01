@@ -6,5 +6,3 @@ class SumSolution:
             raise ValueError("Both x and y must be integers")
         
         return x + y
-
-
