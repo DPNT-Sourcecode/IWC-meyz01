@@ -96,21 +96,17 @@ class Queue:
 
         for task in tasks:
             # Check if task seen
-            print('task_map', task_map)
-            seen_tasks = task_map.get(task.user_id)
-            print(seen_tasks)
-            if seen_tasks is None:
-                print('seen')
-                task_map.setdefault(task.user_id, []).append(task.provider)
-                print(task_map)
-                
-                metadata = task.metadata
-                metadata.setdefault("priority", Priority.NORMAL)
-                metadata.setdefault("group_earliest_timestamp", MAX_TIMESTAMP)
-                self._queue.append(task)
+            seen_tasks = task_map.setdefault(task.user_id, [])
+            if task.provider in seen_tasks:
+                continue
+            
+            seen_tasks.append(task.provider)
+            
+            metadata = task.metadata
+            metadata.setdefault("priority", Priority.NORMAL)
+            metadata.setdefault("group_earliest_timestamp", MAX_TIMESTAMP)
+            self._queue.append(task)
 
-            # elif task.provider in seen_tasks:
-            #    continue
 
         return self.size
 
@@ -256,6 +252,7 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
 
 
