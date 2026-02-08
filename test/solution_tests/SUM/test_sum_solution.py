@@ -1,10 +1,12 @@
-from pytest import raises
+import pytest
 from solutions.SUM.sum_solution import SumSolution
 
 
-class TestSum():
+class TestSum:
     def test_sum(self):
         assert SumSolution().compute(1, 2) == 3
 
-        assert raises(ValueError, SumSolution().compute("1", "3"))
+        with pytest.raises(ValueError):
+            SumSolution().compute("1", True)
+
 
