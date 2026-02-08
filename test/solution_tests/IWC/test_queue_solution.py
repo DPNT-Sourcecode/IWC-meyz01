@@ -10,8 +10,12 @@ def test_enqueue_size_dequeue_flow() -> None:
         call_dequeue().expect("companies_house", 1),
     ])
     
+    # Multiple user tasks
     run_queue([
         call_enqueue("companies_house", 1, iso_ts(delta_minutes=0)).expect(1),
+        call_enqueue("id_verification", 1, iso_ts(delta_minutes=10)).expect(2),
+
+        call_enqueue("companies_house", 1, iso_ts(delta_minutes=20)).expect(2),
         call_enqueue("companies_house", 1, iso_ts(delta_minutes=20)).expect(2),
         call_enqueue("companies_house", 1, iso_ts(delta_minutes=10)).expect(3),
         call_size().expect(3),
@@ -20,15 +24,18 @@ def test_enqueue_size_dequeue_flow() -> None:
         call_dequeue().expect("companies_house", 1),
     ])
     
+    # Temporal ordering for 1 user
     run_queue([
-        call_enqueue("companies_house", 1, iso_ts(delta_minutes=0)).expect(1),
-        call_enqueue("companies_house", 1, iso_ts(delta_minutes=20)).expect(2),
-        call_enqueue("companies_house", 1, iso_ts(delta_minutes=10)).expect(3),
-        call_size().expect(3),
-        call_dequeue().expect("companies_house", 1),
-        call_dequeue().expect("companies_house", 1),
+        call_enqueue("companies_house", 1, iso_ts(delta_minutes=30)).expect(1),
+        call_enqueue("bank_statements", 1, iso_ts(delta_minutes=20)).expect(2),
+        call_enqueue("id_verification", 1, iso_ts(delta_minutes=10)).expect(2),
+
+        call_dequeue().expect("id_verification", 1),
+        call_dequeue().expect("bank_statements", 1),
         call_dequeue().expect("companies_house", 1),
     ])
+
+
 
 
 
