@@ -9,7 +9,8 @@ def test_enqueue_size_dequeue_flow() -> None:
         call_size().expect(1),
         call_dequeue().expect("companies_house", 1),
     ])
-    
+
+
 def test_rule_of_3_ordering() -> None:
     run_queue([
         call_enqueue("companies_house", 1, iso_ts(delta_minutes=10)).expect(1),
@@ -25,7 +26,7 @@ def test_rule_of_3_ordering() -> None:
         call_dequeue().expect("bank_statements", 1),
         call_dequeue().expect("companies_house", 2),
     ])
-    
+
 
 def test_temporal_ordering():
     # Ordering for 1 user
@@ -53,7 +54,8 @@ def test_temporal_ordering():
         call_dequeue().expect("bank_statements", 3),
         call_dequeue().expect("id_verification", 2),
     ])
-    
+
+
 def test_dependency_resolution():
     # Dependency resolution
     run_queue([
@@ -67,6 +69,7 @@ def test_dependency_resolution():
         call_dequeue().expect("companies_house", 2),
         call_dequeue().expect("credit_check", 2),
     ])
+
 
 def test_multi_rule():
     run_queue([
