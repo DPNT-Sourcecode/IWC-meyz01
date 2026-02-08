@@ -96,10 +96,9 @@ class Queue:
 
         for task in tasks:
             # Check if task seen
-            # print('task_map', task_map)
+            print('task_map', task_map)
             seen_tasks = task_map.get(task.user_id)
             print(seen_tasks)
-            print('task_map', task_map)
             if seen_tasks is None:
                 print('seen')
                 task_map.setdefault(task.user_id, []).append(task.provider)
@@ -257,6 +256,7 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
 
 
