@@ -39,10 +39,15 @@ def test_enqueue_size_dequeue_flow() -> None:
     
     # Dependency resolution
     run_queue([
-        call_enqueue("credit_check", 1, iso_ts(delta_minutes=0)).expect(2),
+        call_enqueue("credit_check", 1, iso_ts(delta_minutes=10)).expect(2),
+        call_enqueue("credit_check", 2, iso_ts(delta_minutes=0)).expect(4),
+        call_enqueue("bank_statements", 1, iso_ts(delta_minutes=10)).expect(5),
         
         call_dequeue().expect("companies_house", 1),
         call_dequeue().expect("credit_check", 1),
+        call_dequeue().expect("companies_house", 2),
+        call_dequeue().expect("credit_check", 2),
     ])
+
 
 
