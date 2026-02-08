@@ -89,10 +89,3 @@ def test_multi_rule():
 
         call_dequeue().expect("bank_statements", 4),
     ])
-
-
-
-
-
-
-
