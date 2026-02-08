@@ -92,3 +92,13 @@ def test_multi_rule():
 
         call_dequeue().expect("bank_statements", 4),
     ])
+
+
+def test_dedupe():
+    run_queue([
+    call_enqueue("bank_statements", 1, iso_ts(delta_minutes=30)).expect(1),
+    call_enqueue("bank_statements", 1, iso_ts(delta_minutes=10)).expect(1),
+
+    call_dequeue().expect("bank_statements", 1),
+])
+
