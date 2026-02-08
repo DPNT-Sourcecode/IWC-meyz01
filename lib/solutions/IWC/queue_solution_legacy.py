@@ -50,7 +50,7 @@ REGISTERED_PROVIDERS: list[Provider] = [
 class Queue:
     def __init__(self):
         self._queue = []
-        self._seen = {}
+        self._seen = set()
 
     def _collect_dependencies(self, task: TaskSubmission) -> list[TaskSubmission]:
         provider = next((p for p in REGISTERED_PROVIDERS if p.name == task.provider), None)
@@ -170,6 +170,7 @@ class Queue:
 
     def purge(self):
         self._queue.clear()
+        self._seen.clear()
         return True
 
 """
@@ -255,4 +256,5 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
