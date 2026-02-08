@@ -96,6 +96,7 @@ class Queue:
 
         for task in tasks:
             # Check if task seen
+            print('task_map', task_map)
             seen_tasks = task_map.get(task.user_id)
             print(seen_tasks)
             if seen_tasks and task.provider in seen_tasks:
@@ -252,4 +253,5 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
