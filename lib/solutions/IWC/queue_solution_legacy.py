@@ -96,11 +96,16 @@ class Queue:
 
         for task in tasks:
             # Check if task seen
+            print(task_map)
             seen_tasks = task_map.setdefault(task.user_id, [])
+            print('seen_tasks', seen_tasks)
             if task.provider in seen_tasks:
+                print('seen')
                 continue
             
             seen_tasks.append(task.provider)
+
+            print('all_seen', seen_tasks)
             
             metadata = task.metadata
             metadata.setdefault("priority", Priority.NORMAL)
@@ -251,12 +256,3 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
-
-
-
-
-
-
-
-
-
