@@ -77,18 +77,19 @@ def test_multi_rule():
         call_enqueue("credit_check", 2, iso_ts(delta_minutes=40)).expect(8),
         call_enqueue("bank_statements", 4, iso_ts(delta_minutes=60)).expect(9),
 
+        call_dequeue().expect("companies_house", 2),
+        call_dequeue().expect("credit_check", 2),
+        call_dequeue().expect("companies_house", 2),
+        call_dequeue().expect("credit_check", 2),
+
         call_dequeue().expect("bank_statements", 1),
         call_dequeue().expect("companies_house", 1),
         call_dequeue().expect("companies_house", 1),
         call_dequeue().expect("credit_check", 1),
-        
-        # call_dequeue().expect("companies_house", 2),
-        # call_dequeue().expect("credit_check", 2),
-        # call_dequeue().expect("companies_house", 2),
-        # call_dequeue().expect("credit_check", 2),
 
-        # call_dequeue().expect("bank_statements", 4),
+        call_dequeue().expect("bank_statements", 4),
     ])
+
 
 
 
