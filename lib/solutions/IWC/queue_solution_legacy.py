@@ -50,6 +50,7 @@ REGISTERED_PROVIDERS: list[Provider] = [
 class Queue:
     def __init__(self):
         self._queue = []
+        self._seen = {}
 
     def _collect_dependencies(self, task: TaskSubmission) -> list[TaskSubmission]:
         provider = next((p for p in REGISTERED_PROVIDERS if p.name == task.provider), None)
@@ -92,24 +93,20 @@ class Queue:
 
     def enqueue(self, item: TaskSubmission) -> int:
         tasks = [*self._collect_dependencies(item), item]
-        task_map = {}
 
         for task in tasks:
-            # Check if task seen
-            print(task_map)
-            seen_tasks = task_map.setdefault(task.user_id, [])
-            print('seen_tasks', seen_tasks)
-            if task.provider in seen_tasks:
-                print('seen')
-                continue
-            
-            seen_tasks.append(task.provider)
+            key = (task.user_id, task.provider)
 
-            print('all_seen', seen_tasks)
-            
-            metadata = task.metadata
-            metadata.setdefault("priority", Priority.NORMAL)
-            metadata.setdefault("group_earliest_timestamp", MAX_TIMESTAMP)
+            if key in self._seen:
+                continue
+
+            self._seen.add(key)
+
+            # protect against shared metadata
+            task.metadata = dict(task.metadata)
+            task.metadata.setdefault("priority", Priority.NORMAL)
+            task.metadata.setdefault("group_earliest_timestamp", MAX_TIMESTAMP)
+
             self._queue.append(task)
 
         return self.size
@@ -156,6 +153,8 @@ class Queue:
         )
 
         task = self._queue.pop(0)
+        self._seen.discard((task.user_id, task.provider))
+
         return TaskDispatch(
             provider=task.provider,
             user_id=task.user_id,
@@ -256,3 +255,4 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
