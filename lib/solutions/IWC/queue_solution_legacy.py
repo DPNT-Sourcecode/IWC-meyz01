@@ -92,7 +92,7 @@ class Queue:
 
     def enqueue(self, item: TaskSubmission) -> int:
         tasks = [*self._collect_dependencies(item), item]
-        task_map = {}
+        task_map: dict[str, list[str]] = {}
 
         for task in tasks:
             # Check if task seen
@@ -106,7 +106,6 @@ class Queue:
             metadata.setdefault("priority", Priority.NORMAL)
             metadata.setdefault("group_earliest_timestamp", MAX_TIMESTAMP)
             self._queue.append(task)
-
 
         return self.size
 
@@ -252,6 +251,7 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
 
 
