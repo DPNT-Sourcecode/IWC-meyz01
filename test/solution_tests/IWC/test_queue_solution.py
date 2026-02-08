@@ -12,17 +12,18 @@ def test_enqueue_size_dequeue_flow() -> None:
     
     # Rule of 3 ordering
     run_queue([
-        call_enqueue("companies_house", 1).expect(1),
-        call_enqueue("id_verification", 1).expect(2),
+        call_enqueue("companies_house", 1, iso_ts(delta_minutes=10)).expect(1),
+        call_enqueue("id_verification", 1, iso_ts(delta_minutes=10)).expect(2),
 
-        call_enqueue("id_verification", 2).expect(2),
-        call_enqueue("id_verification", 3).expect(2),
+        call_enqueue("companies_house", 2, iso_ts(delta_minutes=10)).expect(3),
+        call_enqueue("companies_house", 3, iso_ts(delta_minutes=10)).expect(4),
 
-        call_enqueue("bank_statements", 1).expect(2),
+        call_enqueue("bank_statements", 1, iso_ts(delta_minutes=10)).expect(5),
         
         call_dequeue().expect("companies_house", 1),
-        call_dequeue().expect("companies_house", 1),
-        call_dequeue().expect("companies_house", 1),
+        call_dequeue().expect("id_verification", 1),
+        call_dequeue().expect("bank_statements", 1),
+        call_dequeue().expect("companies_house", 2),
     ])
     
     # Temporal ordering for 1 user
@@ -35,9 +36,14 @@ def test_enqueue_size_dequeue_flow() -> None:
         call_dequeue().expect("bank_statements", 1),
         call_dequeue().expect("companies_house", 1),
     ])
+    
+    # Dependency resolution
+    run_queue([
+        call_enqueue("credit_check", 1, iso_ts(delta_minutes=30)).expect(1),
+        
+        call_size().expect(2)
 
-
-
-
-
+        call_dequeue().expect("companies_house", 1),
+        call_dequeue().expect("credit_check", 1),
+    ])
 
